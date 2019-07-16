@@ -9,7 +9,7 @@
  */
 package com.breadwallet.core.ethereum;
 
-import android.support.annotation.Nullable;
+import androidx.annotation.Nullable;
 
 import com.breadwallet.core.BRCoreJniReference;
 

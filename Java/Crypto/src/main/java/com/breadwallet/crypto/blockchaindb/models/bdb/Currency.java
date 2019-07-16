@@ -7,7 +7,7 @@
  */
 package com.breadwallet.crypto.blockchaindb.models.bdb;
 
-import android.support.annotation.Nullable;
+import androidx.annotation.Nullable;
 
 import com.google.common.base.Optional;
 import com.google.common.collect.ImmutableList;
