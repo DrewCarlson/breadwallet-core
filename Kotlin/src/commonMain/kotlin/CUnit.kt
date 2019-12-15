@@ -18,4 +18,22 @@ expect class CUnit : Closeable {
 
   override fun equals(other: Any?): Boolean
   override fun hashCode(): Int
+
+  companion object {
+    internal fun create(
+        currency: Currency,
+        uids: String,
+        name: String,
+        symbol: String
+    ): CUnit
+
+    internal fun create(
+        currency: Currency,
+        uids: String,
+        name: String,
+        symbol: String,
+        base: CUnit,
+        decimals: UInt
+    ): CUnit
+  }
 }

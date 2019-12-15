@@ -2,7 +2,6 @@ package com.breadwallet.core
 
 import kotlinx.cinterop.toKStringFromUtf8
 import kotlinx.io.core.Closeable
-import platform.posix.uint8_t
 
 actual class CUnit internal constructor(
     core: BRCryptoUnit,
@@ -12,44 +11,6 @@ actual class CUnit internal constructor(
   internal val core: BRCryptoUnit = if (take) {
     checkNotNull(cryptoUnitTake(core))
   } else core
-
-  internal constructor(
-      currency: Currency,
-      uids: String,
-      name: String,
-      symbol: String
-  ) : this(
-      core = checkNotNull(
-          cryptoUnitCreateAsBase(
-              currency.core,
-              uids,
-              name,
-              symbol
-          )
-      ),
-      take = false
-  )
-
-  internal constructor(
-      currency: Currency,
-      uids: String,
-      name: String,
-      symbol: String,
-      base: CUnit,
-      decimals: uint8_t
-  ) : this(
-      core = checkNotNull(
-          cryptoUnitCreate(
-              currency.core,
-              uids,
-              name,
-              symbol,
-              base.core,
-              decimals
-          )
-      ),
-      take = false
-  )
 
   actual val currency: Currency
     get() = Currency(checkNotNull(cryptoUnitGetCurrency(core)), false)
@@ -80,5 +41,43 @@ actual class CUnit internal constructor(
 
   override fun close() {
     cryptoUnitGive(core)
+  }
+
+  actual companion object {
+    internal actual fun create(
+        currency: Currency,
+        uids: String,
+        name: String,
+        symbol: String
+    ) = CUnit(
+        core = checkNotNull(
+            cryptoUnitCreateAsBase(
+                currency.core,
+                uids,
+                name,
+                symbol
+            )
+        ),
+        take = false
+    )
+
+    internal actual fun create(
+        currency: Currency,
+        uids: String,
+        name: String,
+        symbol: String,
+        base: CUnit,
+        decimals: UInt
+    ) = CUnit(
+        core = checkNotNull(
+            cryptoUnitCreateAsBase(
+                currency.core,
+                uids,
+                name,
+                symbol
+            )
+        ),
+        take = false
+    )
   }
 }
