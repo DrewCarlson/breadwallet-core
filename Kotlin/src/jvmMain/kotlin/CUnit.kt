@@ -21,7 +21,7 @@ actual class CUnit internal constructor(
   actual val base: CUnit
     get() = TODO()
   actual val decimals: UInt
-    get() = core.decimals.toLong().toUInt()
+    get() = core.decimals.toByte().toUInt()
 
   actual fun isCompatible(unit: CUnit): Boolean =
       core.isCompatible(unit.core)

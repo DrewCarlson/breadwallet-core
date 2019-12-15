@@ -14,7 +14,7 @@ actual class Amount internal constructor(
     actual fun create(long: Long, unit: CUnit): Amount =
         Amount(BRCryptoAmount.create(long, unit.core))
 
-    actual fun create(string: String, isNegative: Boolean, unit: CUnit): Amount? =
+    actual fun create(string: String, unit: CUnit, isNegative: Boolean): Amount? =
        BRCryptoAmount.create(string, isNegative, unit.core).orNull()?.run(::Amount)
   }
 

@@ -70,11 +70,13 @@ actual class CUnit internal constructor(
         decimals: UInt
     ) = CUnit(
         core = checkNotNull(
-            cryptoUnitCreateAsBase(
+            cryptoUnitCreate(
                 currency.core,
                 uids,
                 name,
-                symbol
+                symbol,
+                base.core,
+                decimals.toUByte()
             )
         ),
         take = false

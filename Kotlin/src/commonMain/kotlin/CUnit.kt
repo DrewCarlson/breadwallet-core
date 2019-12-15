@@ -11,7 +11,7 @@ expect class CUnit : Closeable {
   public val name: String
   public val symbol: String
   public val base: CUnit
-  public val decimals: UInt
+  public val decimals: UInt // TODO: Maybe use UByte here
 
   public fun isCompatible(unit: CUnit): Boolean
   public fun hasCurrency(currency: Currency): Boolean

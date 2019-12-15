@@ -23,7 +23,7 @@ actual class Amount internal constructor(
     actual fun create(long: Long, unit: CUnit): Amount =
         Amount(checkNotNull(cryptoAmountCreateInteger(long, unit.core)), false)
 
-    actual fun create(string: String, isNegative: Boolean, unit: CUnit): Amount? {
+    actual fun create(string: String, unit: CUnit, isNegative: Boolean): Amount? {
       val cryptoIsNegative = if (isNegative) CRYPTO_TRUE else CRYPTO_FALSE
       val cryptoAmount = cryptoAmountCreateString(string, cryptoIsNegative, unit.core)
       return Amount(cryptoAmount ?: return null, false)
@@ -45,11 +45,7 @@ actual class Amount internal constructor(
     val overflow = alloc<BRCryptoBooleanVar>().apply {
       value = CRYPTO_FALSE
     }
-    val value = cryptoAmountGetDouble(
-        core,
-        unit.core,
-        overflow.ptr
-    )
+    val value = cryptoAmountGetDouble(core, unit.core, overflow.ptr)
     when (overflow.value) {
       CRYPTO_TRUE -> null
       else -> value
@@ -61,8 +57,7 @@ actual class Amount internal constructor(
   }
 
   actual fun asString(pair: CurrencyPair): String? {
-    return pair.exchangeAsBase(this)
-        ?.asString(pair.quoteUnit)
+    return pair.exchangeAsBase(this)?.asString(pair.quoteUnit)
   }
 
   actual fun asString(base: Int, preface: String): String? {
