@@ -1,8 +1,6 @@
 package com.breadwallet.core
 
-import com.breadwallet.corenative.CryptoLibraryDirect.*
 import com.breadwallet.corenative.crypto.BRCryptoUnit
-import com.sun.jna.Pointer
 import kotlinx.io.core.Closeable
 
 const val UTF8 = "UTF-8"

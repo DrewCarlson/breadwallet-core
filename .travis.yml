@@ -1,0 +1,21 @@
+matrix:
+  include:
+    - os: osx
+      language: java
+      jdk: oraclejdk13
+      osx_image: xcode11.2
+      before_install:
+        - cd Kotlin
+      install:
+        - ./gradlew --console=plain --no-daemon
+      script:
+        - ./gradlew allTest --console=plain --no-daemon
+      before_cache:
+        - rm -f  $HOME/.gradle/caches/modules-2/modules-2.lock
+        - rm -fr $HOME/.gradle/caches/*/plugin-resolution/
+      cache:
+        directories:
+          - $HOME/.gradle/caches/
+          - $HOME/.gradle/wrapper/
+          - $HOME/.konan/cache/
+          - $HOME/.konan/dependencies/
