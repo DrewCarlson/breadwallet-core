@@ -1,0 +1,119 @@
+package com.breadwallet.core
+
+import kotlinx.cinterop.alloc
+import kotlinx.cinterop.memScoped
+import kotlinx.cinterop.ptr
+import kotlinx.cinterop.toKStringFromUtf8
+import kotlinx.cinterop.value
+import kotlinx.io.core.Closeable
+
+actual class Amount internal constructor(
+    core: BRCryptoAmount,
+    take: Boolean
+) : Comparable<Amount>, Closeable {
+
+  internal val core: BRCryptoAmount = if (take) {
+    checkNotNull(cryptoAmountTake(core))
+  } else core
+
+  actual companion object {
+    actual fun create(double: Double, unit: CUnit): Amount {
+      return Amount(
+          checkNotNull(cryptoAmountCreateDouble(double, unit.core)),
+          false
+      )
+    }
+
+    actual fun create(long: Long, unit: CUnit): Amount {
+      return Amount(
+          checkNotNull(cryptoAmountCreateInteger(long, unit.core)),
+          false
+      )
+    }
+
+    actual fun create(string: String, unit: CUnit, isNegative: Boolean): Amount? {
+      val cryptoIsNegative = if (isNegative) CRYPTO_TRUE else CRYPTO_FALSE
+      val cryptoAmount = cryptoAmountCreateString(string, cryptoIsNegative, unit.core)
+      return Amount(
+          cryptoAmount ?: return null,
+          false
+      )
+    }
+  }
+
+  actual val unit: CUnit
+    get() = CUnit(checkNotNull(cryptoAmountGetUnit(core)), false)
+  actual val currency: Currency
+    get() = unit.currency
+  actual val isNegative: Boolean
+    get() = CRYPTO_TRUE == cryptoAmountIsNegative(core)
+  actual val negate: Amount
+    get() = Amount(checkNotNull(cryptoAmountNegate(core)), false)
+  actual val isZero: Boolean
+    get() = CRYPTO_TRUE == cryptoAmountIsZero(core)
+
+  actual fun asDouble(unit: CUnit): Double? = memScoped {
+    val overflow = alloc<BRCryptoBooleanVar>().apply {
+      value = CRYPTO_FALSE
+    }
+    val value = cryptoAmountGetDouble(
+        core,
+        unit.core,
+        overflow.ptr
+    )
+    when (overflow.value) {
+      CRYPTO_TRUE -> null
+      else -> value
+    }
+  }
+
+  actual fun asString(unit: CUnit): String? {
+    return asDouble(unit)?.toString()
+  }
+
+  actual fun asString(pair: CurrencyPair): String? {
+    return pair.exchangeAsBase(this)
+        ?.asString(pair.quoteUnit)
+  }
+
+  actual fun asString(base: Int, preface: String): String? {
+    val value = cryptoAmountGetValue(core)
+    val chars = checkNotNull(coerceStringPrefaced(value, base, preface))
+    return chars.toKStringFromUtf8()
+  }
+
+  actual operator fun plus(that: Amount): Amount {
+    require(isCompatible(that))
+    return Amount(checkNotNull(cryptoAmountAdd(core, that.core)), false)
+  }
+
+  actual operator fun minus(that: Amount): Amount {
+    require(isCompatible(that))
+    return Amount(checkNotNull(cryptoAmountSub(core, that.core)), false)
+  }
+
+  actual fun convert(unit: CUnit): Amount? {
+    val converted = cryptoAmountConvertToUnit(core, unit.core) ?: return null
+    return Amount(converted, false)
+  }
+
+  actual fun isCompatible(amount: Amount): Boolean =
+      CRYPTO_TRUE == cryptoAmountIsCompatible(core, amount.core)
+
+  override fun close() {
+    cryptoAmountGive(core)
+  }
+
+  actual override fun toString(): String = "TODO"// TODO
+
+  actual override fun equals(other: Any?): Boolean {
+    return other is Amount && compareTo(other) == 0
+  }
+
+  override operator fun compareTo(other: Amount): Int =
+      when (cryptoAmountCompare(core, other.core)) {
+        BRCryptoComparison.CRYPTO_COMPARE_EQ -> 0
+        BRCryptoComparison.CRYPTO_COMPARE_GT -> 1
+        BRCryptoComparison.CRYPTO_COMPARE_LT -> -1
+      }
+}

@@ -1,0 +1,21 @@
+package com.breadwallet.core
+
+import kotlinx.io.core.Closeable
+
+expect class CUnit : Closeable {
+
+  public val currency: Currency
+
+  internal val uids: String
+
+  public val name: String
+  public val symbol: String
+  public val base: CUnit
+  public val decimals: UInt
+
+  public fun isCompatible(unit: CUnit): Boolean
+  public fun hasCurrency(currency: Currency): Boolean
+
+  override fun equals(other: Any?): Boolean
+  override fun hashCode(): Int
+}

@@ -1,0 +1,3 @@
+rootProject.name = "walletkit-kotlin"
+
+enableFeaturePreview('GRADLE_METADATA')
