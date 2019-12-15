@@ -31,9 +31,7 @@ actual class CUnit internal constructor(
   actual override fun equals(other: Any?): Boolean =
       other is CUnit && core.isCompatible(other.core)
 
-  actual override fun hashCode(): Int {
-    return super.hashCode()
-  }
+  actual override fun hashCode(): Int = core.hashCode()
 
   override fun close() {
     core.give()

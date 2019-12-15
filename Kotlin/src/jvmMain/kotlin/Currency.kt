@@ -25,9 +25,7 @@ actual class Currency internal constructor(
   actual override fun equals(other: Any?): Boolean =
       other is Currency && core.isIdentical(other.core)
 
-  actual override fun hashCode(): Int {
-    return super.hashCode()
-  }
+  actual override fun hashCode(): Int = core.hashCode()
 
   override fun close() {
     core.give()

@@ -32,6 +32,7 @@ expect class Amount : Comparable<Amount>, Closeable {
   public fun isCompatible(amount: Amount): Boolean
 
   override fun equals(other: Any?): Boolean
+  override fun hashCode(): Int
   override fun toString(): String
 }
 

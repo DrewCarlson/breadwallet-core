@@ -27,7 +27,7 @@ actual class Currency internal constructor(
     return other is Currency && CRYPTO_TRUE == cryptoCurrencyIsIdentical(core, other.core)
   }
 
-  actual override fun hashCode(): Int = uids.hashCode()
+  actual override fun hashCode(): Int = core.hashCode()
 
   override fun close() {
     cryptoCurrencyGive(core)

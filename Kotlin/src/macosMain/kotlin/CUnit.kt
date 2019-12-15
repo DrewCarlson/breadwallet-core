@@ -76,7 +76,7 @@ actual class CUnit internal constructor(
     return other is CUnit && CRYPTO_TRUE == cryptoUnitIsIdentical(core, other.core)
   }
 
-  actual override fun hashCode(): Int = uids.hashCode()
+  actual override fun hashCode(): Int = core.hashCode()
 
   override fun close() {
     cryptoUnitGive(core)
