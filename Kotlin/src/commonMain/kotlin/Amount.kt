@@ -9,8 +9,8 @@ expect class Amount : Comparable<Amount>, Closeable {
     public fun create(long: Long, unit: CUnit): Amount
     public fun create(
         string: String,
-        unit: CUnit,
-        isNegative: Boolean = false
+        isNegative: Boolean,
+        unit: CUnit
     ): Amount?
   }
 

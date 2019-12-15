@@ -14,9 +14,8 @@ actual class Amount internal constructor(
     actual fun create(long: Long, unit: CUnit): Amount =
         Amount(BRCryptoAmount.create(long, unit.core))
 
-    actual fun create(string: String, unit: CUnit, isNegative: Boolean): Amount? {
-      TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
-    }
+    actual fun create(string: String, isNegative: Boolean, unit: CUnit): Amount? =
+       BRCryptoAmount.create(string, isNegative, unit.core).orNull()?.run(::Amount)
   }
 
   actual val unit: CUnit
@@ -46,10 +45,8 @@ actual class Amount internal constructor(
   actual operator fun minus(that: Amount): Amount =
       Amount(checkNotNull(core.sub(that.core).orNull()))
 
-  actual fun convert(unit: CUnit): Amount? {
-    val coreAmount = core.convert(unit.core).orNull() ?: return null
-    return Amount(coreAmount)
-  }
+  actual fun convert(unit: CUnit): Amount? =
+      core.convert(unit.core).orNull()?.run(::Amount)
 
   actual fun isCompatible(amount: Amount): Boolean =
       core.isCompatible(amount.core)

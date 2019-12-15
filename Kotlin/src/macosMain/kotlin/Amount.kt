@@ -17,27 +17,16 @@ actual class Amount internal constructor(
   } else core
 
   actual companion object {
-    actual fun create(double: Double, unit: CUnit): Amount {
-      return Amount(
-          checkNotNull(cryptoAmountCreateDouble(double, unit.core)),
-          false
-      )
-    }
+    actual fun create(double: Double, unit: CUnit): Amount =
+        Amount(checkNotNull(cryptoAmountCreateDouble(double, unit.core)), false)
 
-    actual fun create(long: Long, unit: CUnit): Amount {
-      return Amount(
-          checkNotNull(cryptoAmountCreateInteger(long, unit.core)),
-          false
-      )
-    }
+    actual fun create(long: Long, unit: CUnit): Amount =
+        Amount(checkNotNull(cryptoAmountCreateInteger(long, unit.core)), false)
 
-    actual fun create(string: String, unit: CUnit, isNegative: Boolean): Amount? {
+    actual fun create(string: String, isNegative: Boolean, unit: CUnit): Amount? {
       val cryptoIsNegative = if (isNegative) CRYPTO_TRUE else CRYPTO_FALSE
       val cryptoAmount = cryptoAmountCreateString(string, cryptoIsNegative, unit.core)
-      return Amount(
-          cryptoAmount ?: return null,
-          false
-      )
+      return Amount(cryptoAmount ?: return null, false)
     }
   }
 
