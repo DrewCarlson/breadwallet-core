@@ -17,5 +17,6 @@ matrix:
         directories:
           - $HOME/.gradle/caches/
           - $HOME/.gradle/wrapper/
+          - $HOME/.konan/kotlin-native-macos-*
           - $HOME/.konan/cache/
           - $HOME/.konan/dependencies/
