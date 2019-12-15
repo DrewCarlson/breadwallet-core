@@ -85,8 +85,7 @@ actual class Amount internal constructor(
         maximumIntegerDigits = Int.MAX_VALUE
         roundingMode = RoundingMode.HALF_EVEN
 
-        decimalFormatSymbols = (decimalFormatSymbols.clone() as DecimalFormatSymbols)
-        decimalFormatSymbols.apply {
+        decimalFormatSymbols = (decimalFormatSymbols.clone() as DecimalFormatSymbols).apply {
           unit.symbol
               .also(::setInternationalCurrencySymbol)
               .also(::setCurrencySymbol)

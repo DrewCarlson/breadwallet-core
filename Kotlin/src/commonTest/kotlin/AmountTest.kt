@@ -222,6 +222,87 @@ class AmountTest {
   }
 
   @Test
+  fun testAmountETH() {
+    var results: List<String>
+    val eth = Currency.create("Ethereum", "Ethereum", "ETH", "native", null)
+
+    val unitWei = CUnit.create(eth, "ETH-WEI", "WEI", "wei")
+    val unitGwei = CUnit.create(eth, "ETH-GWEI", "GWEI", "gwei", unitWei, 9u)
+    val unitEther = CUnit.create(eth, "ETH-ETH", "ETHER", "E", unitWei, 18u)
+
+    val a1 = Amount.create("12.12345678", unitEther, false)
+    assertNotNull(a1)
+    assertNotNull(a1.asDouble(unitEther))
+    assertEquals(12.12345678, a1.asDouble(unitEther))
+
+    val a2 = Amount.create("123.12345678", unitEther, false)
+    assertNotNull(a2)
+    assertNotNull(a2.asDouble(unitEther))
+    assertEquals(123.12345678, a2.asDouble(unitEther))
+
+    val a3 = Amount.create("12.123456789", unitGwei, false)
+    assertNotNull(a3)
+    assertNotNull(a3.asDouble(unitGwei))
+    assertEquals(12.123456789, a3.asDouble(unitGwei))
+
+    val a4 = Amount.create("123.12345678", unitGwei, false)
+    assertNotNull(a4)
+    assertNotNull(a4.asDouble(unitGwei))
+    assertEquals(123.12345678, a4.asDouble(unitGwei))
+
+    // Avoid a 'exact double' representation error:
+    //    was 1.234567891234567891, now: 1.234567891234567936
+    val a5 = Amount.create("1.234567891234567936", unitEther, false)
+    assertNotNull(a5)
+    assertNotNull(a5.asDouble(unitWei))
+    assertEquals(1234567891234567936.0, a5.asDouble(unitWei))
+    assertEquals("1234567891234567936", a5.asString(10, ""))
+    // Lost precision - last 5 digits
+    // TODO(discuss): The swift behaviour diverges here (rounds to ..."568,000:); does that matter?
+    results = listOf(
+        "wei1,234,567,891,234,568,000", // < iOS 13
+        "wei 1,234,567,891,234,568,000", // > iOS 13 (note: the space char is 160, not 32)
+        "wei1,234,567,891,234,567,940" // Jvm
+    )
+    assertTrue("Expected '${a5.asString(unitWei)}' in $results") {
+      results.contains(a5.asString(unitWei))
+    }
+
+    assertEquals("1000000000000000000", Amount.create("1", unitEther, false)?.asString(10, ""))
+    // String (1000000000000000000, radix:16, uppercase: true) -> DE0B6B3A7640000
+    assertEquals("0xDE0B6B3A7640000".toLowerCase(), Amount.create("1", unitEther, false)?.asString(16, "0x"))
+
+    val a6 = Amount.create("123000000000000000000.0", unitWei, false)
+    assertNotNull(a6)
+    results = listOf(
+        "wei123,000,000,000,000,000,000", // < iOS 13
+        "wei 123,000,000,000,000,000,000" // > iOS 13 (note: the space char is 160, not 32)
+    )
+    assertTrue("Expected '${a6.asString(unitWei)}' in $results") {
+      results.contains(a6.asString(unitWei))
+    }
+
+    val a6Double = a6.asDouble(unitWei)
+    assertEquals(1.23e20, a6Double)
+
+    val a7 = Amount.create("123456789012345678.0", unitWei, false)
+    assertNotNull(a7)
+    assertEquals("123456789012345678", a7.asString(10, ""))
+    results = listOf( // Note: a DIFFERENT VALUE between iOS 13
+        "wei123,456,789,012,346,000", // < iOS 13
+        "wei 123,456,789,012,345,680", // > iOS 13 (note: the space char is 160, not 32)
+        "wei 123,456,789,012,345,700", // macOS (note: the space char is 160, not 32)
+        "wei123,456,789,012,345,680" // Jvm
+    )
+    assertTrue("Expected '${a7.asString(unitWei)}' in $results") {
+      results.contains(a7.asString(unitWei))
+    }
+
+    val a7Double = a7.asDouble(unitWei)
+    assertEquals(1.2345678901234568e17, a7Double)
+  }
+
+  @Test
   fun testCurrencyPair() {
     val btc = Currency.create("Bitcoin", "Bitcoin", "BTC", "native", null)
 
@@ -244,7 +325,7 @@ class AmountTest {
     // USD -> BTC
     val oneUSDinBTC = pair.exchangeAsQuote(Amount.create(1.0, unitUsdDollar))
     assertNotNull(oneUSDinBTC)
-    assertEquals(1/10_000.0, oneUSDinBTC.asDouble(unitBtc)) // accuracy: 1e-6
+    assertEquals(1 / 10_000.0, oneUSDinBTC.asDouble(unitBtc)) // accuracy: 1e-6
 
     val oneBTC = Amount.create(1.0, unitBtc)
     assertEquals("$10,000.00", oneBTC.asString(pair))
