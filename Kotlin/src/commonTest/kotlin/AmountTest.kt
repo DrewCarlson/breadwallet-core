@@ -220,4 +220,33 @@ class AmountTest {
     assertNotNull(Amount.create("0.12345678", unitBtc))
     assertNull(Amount.create("0.123456789", unitBtc))
   }
+
+  @Test
+  fun testCurrencyPair() {
+    val btc = Currency.create("Bitcoin", "Bitcoin", "BTC", "native", null)
+
+    val unitSatoshi = CUnit.create(btc, "BTC-SAT", "Satoshi", "SAT")
+    val unitBtc = CUnit.create(btc, "BTC-BTC", "Bitcoin", "B", unitSatoshi, 8u)
+
+    val usd = Currency.create("USDollar", "USDollar", "USD", "fiat", null)
+
+    val unitUsdCents = CUnit.create(usd, "USD-Cents", "Cents", "c")
+    val unitUsdDollar = CUnit.create(usd, "USD-Dollar", "Dollars", "$", unitUsdCents, 2u)
+
+    val pair = CurrencyPair(baseUnit = unitBtc, quoteUnit = unitUsdDollar, exchangeRate = 10_000.0)
+    assertEquals("Bitcoin/Dollars=10000.0", pair.toString())
+
+    // BTC -> USD
+    val oneBTCinUSD = pair.exchangeAsBase(Amount.create(1.0, unitBtc))
+    assertNotNull(oneBTCinUSD)
+    assertEquals(10_000.0, oneBTCinUSD.asDouble(unitUsdDollar)) // accuracy: 1e-6
+
+    // USD -> BTC
+    val oneUSDinBTC = pair.exchangeAsQuote(Amount.create(1.0, unitUsdDollar))
+    assertNotNull(oneUSDinBTC)
+    assertEquals(1/10_000.0, oneUSDinBTC.asDouble(unitBtc)) // accuracy: 1e-6
+
+    val oneBTC = Amount.create(1.0, unitBtc)
+    assertEquals("$10,000.00", oneBTC.asString(pair))
+  }
 }

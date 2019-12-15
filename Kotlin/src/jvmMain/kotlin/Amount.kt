@@ -3,19 +3,22 @@ package com.breadwallet.core
 import com.breadwallet.corenative.crypto.BRCryptoAmount
 import com.breadwallet.corenative.crypto.BRCryptoComparison
 import kotlinx.io.core.Closeable
+import java.math.RoundingMode
+import java.text.DecimalFormat
+import java.text.DecimalFormatSymbols
 
 actual class Amount internal constructor(
     internal val core: BRCryptoAmount
 ) : Comparable<Amount>, Closeable {
   actual companion object {
     actual fun create(double: Double, unit: CUnit): Amount =
-      Amount(BRCryptoAmount.create(double, unit.core))
+        Amount(BRCryptoAmount.create(double, unit.core))
 
     actual fun create(long: Long, unit: CUnit): Amount =
         Amount(BRCryptoAmount.create(long, unit.core))
 
     actual fun create(string: String, unit: CUnit, isNegative: Boolean): Amount? =
-       BRCryptoAmount.create(string, isNegative, unit.core).orNull()?.run(::Amount)
+        BRCryptoAmount.create(string, isNegative, unit.core).orNull()?.run(::Amount)
   }
 
   actual val unit: CUnit
@@ -32,9 +35,13 @@ actual class Amount internal constructor(
   actual fun asDouble(unit: CUnit): Double? =
       core.getDouble(unit.core).orNull()
 
-  actual fun asString(unit: CUnit): String? = TODO("not implemented")
+  actual fun asString(unit: CUnit): String? {
+    val amountDouble = asDouble(unit) ?: return null
+    return formatterWithUnit(unit).format(amountDouble)
+  }
 
-  actual fun asString(pair: CurrencyPair): String? = TODO("not implemented")
+  actual fun asString(pair: CurrencyPair): String? =
+      pair.exchangeAsBase(this)?.asString(pair.quoteUnit)
 
   actual fun asString(base: Int, preface: String): String? =
       core.toStringWithBase(base, preface)
@@ -55,7 +62,7 @@ actual class Amount internal constructor(
       other is Amount && core.compare(other.core) == BRCryptoComparison.CRYPTO_COMPARE_EQ
 
   actual override fun toString(): String =
-      core.toString()
+      asString(unit) ?: "<nan>"
 
   override fun close() {
     core.give()
@@ -68,5 +75,21 @@ actual class Amount internal constructor(
         BRCryptoComparison.CRYPTO_COMPARE_EQ -> 0
         BRCryptoComparison.CRYPTO_COMPARE_GT -> 1
         BRCryptoComparison.CRYPTO_COMPARE_LT -> -1
+      }
+
+  private fun formatterWithUnit(unit: CUnit): DecimalFormat =
+      (DecimalFormat.getCurrencyInstance().clone() as DecimalFormat).apply {
+        val decimals: Int = unit.decimals.toInt()
+        maximumFractionDigits = decimals
+        isParseBigDecimal = 0 != decimals
+        maximumIntegerDigits = Int.MAX_VALUE
+        roundingMode = RoundingMode.HALF_EVEN
+
+        decimalFormatSymbols = (decimalFormatSymbols.clone() as DecimalFormatSymbols)
+        decimalFormatSymbols.apply {
+          unit.symbol
+              .also(::setInternationalCurrencySymbol)
+              .also(::setCurrencySymbol)
+        }
       }
 }

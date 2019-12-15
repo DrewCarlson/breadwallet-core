@@ -6,6 +6,11 @@ import kotlinx.cinterop.ptr
 import kotlinx.cinterop.toKStringFromUtf8
 import kotlinx.cinterop.value
 import kotlinx.io.core.Closeable
+import platform.Foundation.NSLocale
+import platform.Foundation.NSNumber
+import platform.Foundation.NSNumberFormatter
+import platform.Foundation.NSNumberFormatterCurrencyStyle
+import platform.Foundation.currentLocale
 
 actual class Amount internal constructor(
     core: BRCryptoAmount,
@@ -53,7 +58,8 @@ actual class Amount internal constructor(
   }
 
   actual fun asString(unit: CUnit): String? {
-    return asDouble(unit)?.toString()
+    val amountDouble = asDouble(unit) ?: return null
+    return formatterWithUnit(unit).stringFromNumber(NSNumber(amountDouble))
   }
 
   actual fun asString(pair: CurrencyPair): String? {
@@ -88,7 +94,8 @@ actual class Amount internal constructor(
     cryptoAmountGive(core)
   }
 
-  actual override fun toString(): String = "TODO"// TODO
+  actual override fun toString(): String =
+      asString(unit) ?: "<nan>"
 
   actual override fun equals(other: Any?): Boolean {
     return other is Amount && compareTo(other) == 0
@@ -101,5 +108,14 @@ actual class Amount internal constructor(
         BRCryptoComparison.CRYPTO_COMPARE_EQ -> 0
         BRCryptoComparison.CRYPTO_COMPARE_GT -> 1
         BRCryptoComparison.CRYPTO_COMPARE_LT -> -1
+      }
+
+  private fun formatterWithUnit(unit: CUnit) =
+      NSNumberFormatter().apply {
+        locale = NSLocale.currentLocale
+        numberStyle = NSNumberFormatterCurrencyStyle
+        currencySymbol = unit.symbol
+        generatesDecimalNumbers = 0u != unit.decimals
+        maximumFractionDigits = unit.decimals.toULong()
       }
 }

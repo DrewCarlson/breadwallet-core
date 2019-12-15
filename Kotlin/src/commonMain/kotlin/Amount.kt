@@ -21,6 +21,9 @@ expect class Amount : Comparable<Amount>, Closeable {
   public val isZero: Boolean
 
   public fun asDouble(unit: CUnit): Double?
+  // TODO: No multiplatform number formatting APIs exists yet
+  //   For now this method will only use the default
+  //   format defined in the Swift/Java implementations
   public fun asString(unit: CUnit): String?
   public fun asString(pair: CurrencyPair): String?
   public fun asString(base: Int = 16, preface: String = "0x"): String?
