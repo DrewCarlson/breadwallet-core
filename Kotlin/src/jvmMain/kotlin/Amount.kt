@@ -58,6 +58,9 @@ actual class Amount internal constructor(
   actual fun isCompatible(amount: Amount): Boolean =
       core.isCompatible(amount.core)
 
+  actual fun hasCurrency(currency: Currency): Boolean =
+      core.hasCurrency(currency.core)
+
   actual override fun equals(other: Any?): Boolean =
       other is Amount && core.compare(other.core) == BRCryptoComparison.CRYPTO_COMPARE_EQ
 

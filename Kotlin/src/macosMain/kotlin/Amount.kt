@@ -90,6 +90,9 @@ actual class Amount internal constructor(
   actual fun isCompatible(amount: Amount): Boolean =
       CRYPTO_TRUE == cryptoAmountIsCompatible(core, amount.core)
 
+  actual fun hasCurrency(currency: Currency): Boolean =
+      CRYPTO_TRUE == cryptoAmountHasCurrency(core, currency.core)
+
   override fun close() {
     cryptoAmountGive(core)
   }

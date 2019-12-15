@@ -292,6 +292,7 @@ class AmountTest {
         "wei123,456,789,012,346,000", // < iOS 13
         "wei 123,456,789,012,345,680", // > iOS 13 (note: the space char is 160, not 32)
         "wei 123,456,789,012,345,700", // macOS (note: the space char is 160, not 32)
+        "wei123,456,789,012,345,700", // macOS
         "wei123,456,789,012,345,680" // Jvm
     )
     assertTrue("Expected '${a7.asString(unitWei)}' in $results") {
@@ -300,6 +301,50 @@ class AmountTest {
 
     val a7Double = a7.asDouble(unitWei)
     assertEquals(1.2345678901234568e17, a7Double)
+  }
+
+  @Test
+  fun testAmountBTC() {
+    val btc = Currency.create("Bitcoin", "Bitcoin", "BTC", "native", null)
+
+    val unitSatoshi = CUnit.create(btc, "BTC-SAT", "Satoshi", "SAT")
+    val unitBtc = CUnit.create(btc, "BTC-BTC", "Bitcoin", "B", unitSatoshi, 8u)
+
+    assertEquals(btc, unitSatoshi.currency)
+
+    val btc1 = Amount.create(100_000_000L, unitSatoshi)
+    assertEquals(100_000_000.0, btc1.asDouble(unitSatoshi))
+    assertEquals(1.0, btc1.asDouble(unitBtc))
+    assertFalse(btc1.isNegative)
+  }
+
+  @Test
+  fun testAmountExtended() {
+    val btc = Currency.create("Bitcoin", "Bitcoin", "BTC", "native", null)
+
+    val unitSatoshi = CUnit.create(btc, "BTC-SAT", "Satoshi", "SAT")
+    val unitMongo = CUnit.create(btc, "BTC-MONGO", "BitMongo", "BM", unitSatoshi, 70u)
+
+    val btc1 = Amount.create(100_000_000L, unitSatoshi)
+    val btc2 = Amount.create(100_000_001L, unitSatoshi)
+    assertFalse(btc1 > btc2)
+    assertFalse(btc1 > btc1)
+    assertTrue(btc2 > btc1)
+    assertTrue(btc1 <= btc2)
+    assertTrue(btc1 <= btc1)
+    assertTrue(btc2 >= btc1)
+    assertTrue(btc2 >= btc2)
+
+    assertEquals(btc, btc1.currency)
+    assertTrue(btc1.hasCurrency(btc))
+
+    val btc3 = Amount.create(1e20, unitSatoshi)
+    assertNotNull(btc3.asDouble(unitMongo))
+
+    /* TODO: platform specific
+        let btc4 = Amount (core: btc1.core, take: true)
+        XCTAssertTrue (btc4.core == btc1.core)
+     */
   }
 
   @Test
