@@ -75,7 +75,7 @@ actual class Network internal constructor(
     }
 
   actual val minimumFee: NetworkFee
-    get() = checkNotNull(fees.minBy(NetworkFee::timeIntervalInMilliseconds))
+    get() = checkNotNull(fees.maxBy(NetworkFee::timeIntervalInMilliseconds))
   actual val confirmationsUntilFinal: UInt
     get() = core.confirmationsUntilFinal.toByte().toUInt()
 

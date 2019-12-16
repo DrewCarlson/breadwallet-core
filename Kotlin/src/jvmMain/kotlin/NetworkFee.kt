@@ -4,6 +4,7 @@ import com.breadwallet.corenative.cleaner.ReferenceCleaner
 import com.breadwallet.corenative.crypto.BRCryptoNetworkFee
 import com.google.common.primitives.UnsignedLong
 import kotlinx.io.core.Closeable
+import java.util.Objects
 
 actual class NetworkFee(
     internal val core: BRCryptoNetworkFee
@@ -29,7 +30,8 @@ actual class NetworkFee(
   internal actual val pricePerCostFactor: Amount =
       Amount(core.pricePerCostFactor)
 
-  actual override fun hashCode(): Int = core.hashCode()
+  actual override fun hashCode(): Int =
+      Objects.hash(core.confirmationTimeInMilliseconds)
   actual override fun equals(other: Any?): Boolean =
       other is NetworkFee && core.isIdentical(other.core)
 
