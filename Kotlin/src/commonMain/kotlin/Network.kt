@@ -1,5 +1,7 @@
 package com.breadwallet.core
 
+import kotlinx.io.core.Closeable
+
 /**
  * A Blockchain Network.
  *
@@ -7,7 +9,7 @@ package com.breadwallet.core
  * Specifically {BTC, BCH, ETH, ...} x {Mainnet, Testnet, ...}.  Thus there will be
  * networks of [BTC-Mainnet, BTC-Testnet, ..., ETH-Mainnet, ETH-Testnet, ETH-Rinkeby, ...]
  */
-expect class Network {
+expect class Network : Closeable {
 
   /**
    * Create a Network
@@ -28,7 +30,7 @@ expect class Network {
       isMainnet: Boolean,
       currency: Currency,
       height: ULong,
-      associations: Map<Currency, Association>,
+      associations: Map<Currency, NetworkAssociation>,
       fees: List<NetworkFee>,
       confirmationsUntilFinal: UInt
   )
@@ -97,17 +99,18 @@ expect class Network {
 
   public fun hasUnitFor(currency: Currency, unit: CUnit): Boolean?
 
-  class Association {
-    val baseUnit: CUnit
-    val defaultUnit: CUnit
-    val units: Set<CUnit>
-  }
-
   public fun addressFor(string: String): Address?
 
   override fun equals(other: Any?): Boolean
   override fun hashCode(): Int
   override fun toString(): String
+  override fun close()
 
   companion object
 }
+
+data class NetworkAssociation(
+  val baseUnit: CUnit,
+  val defaultUnit: CUnit,
+  val units: Set<CUnit>
+)

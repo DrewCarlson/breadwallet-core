@@ -4,18 +4,19 @@ import com.breadwallet.corenative.crypto.BRCryptoNetwork
 import com.breadwallet.corenative.crypto.BRCryptoPeer
 import com.google.common.primitives.UnsignedInteger
 import com.google.common.primitives.UnsignedLong
+import kotlinx.io.core.Closeable
 import java.util.Locale
 
 actual class Network internal constructor(
     internal val core: BRCryptoNetwork
-) {
+) : Closeable {
   internal actual constructor(
       uids: String,
       name: String,
       isMainnet: Boolean,
       currency: Currency,
       height: ULong,
-      associations: Map<Currency, Association>,
+      associations: Map<Currency, NetworkAssociation>,
       fees: List<NetworkFee>,
       confirmationsUntilFinal: UInt
   ) : this(
@@ -80,12 +81,13 @@ actual class Network internal constructor(
           publicKey
       ).orNull()?.run(::NetworkPeer)
 
-  actual val currency: Currency = Currency(core.currency)
-  actual val currencies: Set<Currency> =
-      (0..core.currencyCount.toLong())
-          .map { core.getCurrency(UnsignedLong.valueOf(it)) }
-          .map(::Currency)
-          .toSet()
+  actual val currency: Currency by lazy { Currency(core.currency) }
+  actual val currencies: Set<Currency> by lazy {
+    (0 until core.currencyCount.toLong())
+        .map { core.getCurrency(UnsignedLong.valueOf(it)) }
+        .map(::Currency)
+        .toSet()
+  }
 
   actual fun currencyByCode(code: String): Currency? =
       currencies.firstOrNull { it.code == code }
@@ -114,7 +116,7 @@ actual class Network internal constructor(
 
   actual fun unitsFor(currency: Currency): Set<CUnit>? {
     if (!hasCurrency(currency)) return null
-    return (0..core.getUnitCount(currency.core).toLong())
+    return (0 until core.getUnitCount(currency.core).toLong())
         .map { checkNotNull(core.getUnitAt(currency.core, UnsignedLong.valueOf(it)).orNull()) }
         .map { CUnit(it) }
         .toSet()
@@ -122,12 +124,6 @@ actual class Network internal constructor(
 
   actual fun hasUnitFor(currency: Currency, unit: CUnit): Boolean? =
       unitsFor(currency)?.contains(unit)
-
-  actual data class Association(
-      actual val baseUnit: CUnit,
-      actual val defaultUnit: CUnit,
-      actual val units: Set<CUnit>
-  )
 
   actual fun addressFor(string: String): Address? =
       core.addressFor(string).orNull()?.run(::Address)
@@ -137,6 +133,10 @@ actual class Network internal constructor(
       other is Network && core.uids == other.uids
 
   actual override fun toString(): String = name
+
+  actual override fun close() {
+    core.give()
+  }
 
   actual companion object
 }

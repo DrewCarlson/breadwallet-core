@@ -9,12 +9,13 @@ import kotlinx.cinterop.readValues
 import kotlinx.cinterop.toCValues
 import kotlinx.cinterop.toKStringFromUtf8
 import kotlinx.cinterop.value
+import kotlinx.io.core.Closeable
 
 
 actual class Network(
     core: BRCryptoNetwork,
     take: Boolean
-) {
+) : Closeable {
 
   internal val core: BRCryptoNetwork =
       if (take) checkNotNull(cryptoNetworkTake(core))
@@ -26,7 +27,7 @@ actual class Network(
       isMainnet: Boolean,
       currency: Currency,
       height: ULong,
-      associations: Map<Currency, Association>,
+      associations: Map<Currency, NetworkAssociation>,
       fees: List<NetworkFee>,
       confirmationsUntilFinal: UInt
   ) : this(
@@ -153,12 +154,6 @@ actual class Network(
   actual fun hasUnitFor(currency: Currency, unit: CUnit): Boolean? =
       unitsFor(currency)?.contains(unit)
 
-  actual data class Association(
-      actual val baseUnit: CUnit,
-      actual val defaultUnit: CUnit,
-      actual val units: Set<CUnit>
-  )
-
   actual fun addressFor(string: String): Address? {
     val cryptoAddress = cryptoNetworkCreateAddressFromString(core, string) ?: return null
     return Address(cryptoAddress, false)
@@ -169,6 +164,9 @@ actual class Network(
       other is Network && uids == other.uids
 
   actual override fun toString(): String = name
+  actual override fun close() {
+    cryptoNetworkGive(core)
+  }
 
   actual companion object
 }
