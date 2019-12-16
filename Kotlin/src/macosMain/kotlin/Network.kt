@@ -3,6 +3,7 @@ package com.breadwallet.core
 import kotlinx.cinterop.alloc
 import kotlinx.cinterop.get
 import kotlinx.cinterop.memScoped
+import kotlinx.cinterop.placeTo
 import kotlinx.cinterop.pointed
 import kotlinx.cinterop.ptr
 import kotlinx.cinterop.readValues
@@ -89,15 +90,11 @@ actual class Network(
   actual var fees: List<NetworkFee>
     get() = memScoped {
       val count = alloc<BRCryptoCountVar>()
-      val ptr = alloc<BRCryptoNetworkFeeVar> {
-        cryptoNetworkGetNetworkFees(core, count.ptr)
-      }
+      val cryptoFees = checkNotNull(cryptoNetworkGetNetworkFees(core, count.ptr))
 
-      val items = ptr.readValues(count.value.toInt())
-
-      (0..items.size)
-          .map { items.ptr[it]!!.pointed }
-          .map { NetworkFee(it.ptr, false) }
+      (0 until count.value.toInt())
+          .map { checkNotNull(cryptoFees[it]) }
+          .map { NetworkFee(it, false) }
     }
     set(value) {
       require(value.isNotEmpty())
@@ -116,19 +113,21 @@ actual class Network(
   actual fun createPeer(address: String, port: UShort, publicKey: String?): NetworkPeer? =
       runCatching { NetworkPeer(this, address, port, publicKey) }.getOrNull()
 
-  actual val currency: Currency =
-      Currency(checkNotNull(cryptoNetworkGetCurrency(core)), false)
-  actual val currencies: Set<Currency> =
-      (0uL until cryptoNetworkGetCurrencyCount(core))
-          .map { cryptoNetworkGetCurrencyAt(core, it) }
-          .map { Currency(checkNotNull(it), false) }
-          .toSet()
+  actual val currency: Currency by lazy {
+    Currency(checkNotNull(cryptoNetworkGetCurrency(core)), false)
+  }
+  actual val currencies: Set<Currency> by lazy {
+    (0uL until cryptoNetworkGetCurrencyCount(core))
+        .map { checkNotNull(cryptoNetworkGetCurrencyAt(core, it)) }
+        .map { Currency(it, false) }
+        .toSet()
+  }
 
   actual fun currencyByCode(code: String): Currency? =
       currencies.firstOrNull { it.code == code }
 
   actual fun currencyByIssuer(issuer: String): Currency? =
-      currencies.firstOrNull { it.issuer == issuer }
+      currencies.firstOrNull { it.issuer.equals(issuer, ignoreCase = true) }
 
   actual fun hasCurrency(currency: Currency): Boolean =
       CRYPTO_TRUE == cryptoNetworkHasCurrency(core, currency.core)
