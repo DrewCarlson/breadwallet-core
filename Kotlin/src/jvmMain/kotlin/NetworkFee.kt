@@ -1,5 +1,6 @@
 package com.breadwallet.core
 
+import com.breadwallet.corenative.cleaner.ReferenceCleaner
 import com.breadwallet.corenative.crypto.BRCryptoNetworkFee
 import com.google.common.primitives.UnsignedLong
 import kotlinx.io.core.Closeable
@@ -7,6 +8,10 @@ import kotlinx.io.core.Closeable
 actual class NetworkFee(
     internal val core: BRCryptoNetworkFee
 ) : Closeable {
+
+  init {
+    ReferenceCleaner.register(core, ::close)
+  }
 
   internal actual constructor(
       timeIntervalInMilliseconds: ULong,

@@ -1,5 +1,6 @@
 package com.breadwallet.core
 
+import com.breadwallet.corenative.cleaner.ReferenceCleaner
 import com.breadwallet.corenative.crypto.BRCryptoNetwork
 import com.breadwallet.corenative.crypto.BRCryptoPeer
 import com.google.common.primitives.UnsignedInteger
@@ -10,6 +11,11 @@ import java.util.Locale
 actual class Network internal constructor(
     internal val core: BRCryptoNetwork
 ) : Closeable {
+
+  init {
+    ReferenceCleaner.register(core, ::close)
+  }
+
   internal actual constructor(
       uids: String,
       name: String,

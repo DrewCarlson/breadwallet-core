@@ -1,5 +1,6 @@
 package com.breadwallet.core
 
+import com.breadwallet.corenative.cleaner.ReferenceCleaner
 import com.breadwallet.corenative.crypto.BRCryptoAmount
 import com.breadwallet.corenative.crypto.BRCryptoComparison
 import kotlinx.io.core.Closeable
@@ -19,6 +20,10 @@ actual class Amount internal constructor(
 
     actual fun create(string: String, unit: CUnit, isNegative: Boolean): Amount? =
         BRCryptoAmount.create(string, isNegative, unit.core).orNull()?.run(::Amount)
+  }
+
+  init {
+    ReferenceCleaner.register(core, ::close)
   }
 
   actual val unit: CUnit

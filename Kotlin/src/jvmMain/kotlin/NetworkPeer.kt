@@ -1,5 +1,6 @@
 package com.breadwallet.core
 
+import com.breadwallet.corenative.cleaner.ReferenceCleaner
 import com.breadwallet.corenative.crypto.BRCryptoPeer
 import com.google.common.primitives.UnsignedInteger
 import kotlinx.io.core.Closeable
@@ -7,6 +8,10 @@ import kotlinx.io.core.Closeable
 actual class NetworkPeer internal constructor(
     internal val core: BRCryptoPeer
 ) : Closeable {
+
+  init {
+    ReferenceCleaner.register(core, ::close)
+  }
 
   internal actual constructor(
       network: Network,

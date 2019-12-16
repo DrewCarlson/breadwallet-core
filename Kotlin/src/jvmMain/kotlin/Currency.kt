@@ -1,11 +1,17 @@
 package com.breadwallet.core
 
+import com.breadwallet.corenative.cleaner.ReferenceCleaner
 import com.breadwallet.corenative.crypto.BRCryptoCurrency
 import kotlinx.io.core.Closeable
 
 actual class Currency internal constructor(
     internal val core: BRCryptoCurrency
 ) : Closeable {
+
+  init {
+    ReferenceCleaner.register(core, ::close)
+  }
+
   /** 'A Unique Identifier */
   actual val uids: String
     get() = core.uids

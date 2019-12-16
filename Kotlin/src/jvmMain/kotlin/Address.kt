@@ -1,11 +1,16 @@
 package com.breadwallet.core
 
+import com.breadwallet.corenative.cleaner.ReferenceCleaner
 import com.breadwallet.corenative.crypto.BRCryptoAddress
 import kotlinx.io.core.Closeable
 
 actual class Address internal constructor(
     internal val core: BRCryptoAddress
 ) : Closeable {
+
+  init {
+    ReferenceCleaner.register(core, ::close)
+  }
 
   actual override fun equals(other: Any?): Boolean =
       other is Address && core.isIdentical(other.core)

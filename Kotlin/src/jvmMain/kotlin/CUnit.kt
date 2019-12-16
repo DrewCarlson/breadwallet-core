@@ -1,5 +1,6 @@
 package com.breadwallet.core
 
+import com.breadwallet.corenative.cleaner.ReferenceCleaner
 import com.breadwallet.corenative.crypto.BRCryptoUnit
 import com.google.common.primitives.UnsignedInteger
 import kotlinx.io.core.Closeable
@@ -9,6 +10,10 @@ const val UTF8 = "UTF-8"
 actual class CUnit internal constructor(
     internal val core: BRCryptoUnit
 ) : Closeable {
+
+  init {
+    ReferenceCleaner.register(core, ::close)
+  }
 
   actual val currency: Currency
     get() = Currency(core.currency)
