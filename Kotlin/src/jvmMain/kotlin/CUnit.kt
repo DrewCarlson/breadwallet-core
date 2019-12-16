@@ -19,7 +19,7 @@ actual class CUnit internal constructor(
   actual val symbol: String
     get() = core.symbol
   actual val base: CUnit
-    get() = TODO()
+    get() = CUnit(core.baseUnit)
   actual val decimals: UInt
     get() = core.decimals.toByte().toUInt()
 

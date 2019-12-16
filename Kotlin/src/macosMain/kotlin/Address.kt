@@ -15,8 +15,7 @@ actual class Address(
   actual override fun equals(other: Any?): Boolean =
       other is Address && CRYPTO_TRUE == cryptoAddressIsIdentical(core, other.core)
 
-  actual override fun hashCode(): Int =
-      toString().hashCode()
+  actual override fun hashCode(): Int = toString().hashCode()
 
   actual override fun toString(): String =
       checkNotNull(cryptoAddressAsString(core)).toKStringFromUtf8()

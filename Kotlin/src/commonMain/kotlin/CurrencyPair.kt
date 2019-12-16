@@ -39,8 +39,8 @@ data class CurrencyPair(
 ) {
 
   /**
-   * Apply `self` CurrencyPair to convert `asBase` (in `baseCurrency`) to `quoteCurrency`.  This
-   * is essentially `asBase * exchangeRate`
+   * Apply `self` CurrencyPair to convert `asBase` (in `baseCurrency`) to `quoteCurrency`.
+   * This is essentially `asBase * exchangeRate`
    *
    * @param amountAsBase The amount of `baseCurrency`
    *
@@ -52,8 +52,8 @@ data class CurrencyPair(
   }
 
   /**
-   * Apply `self` CurrencyPair to convert `asQuote` (in `quoteCurrency`) to `baseCurrency`.  This
-   * is essentially `asQuote / exchangeRate`.
+   * Apply `self` CurrencyPair to convert `asQuote` (in `quoteCurrency`) to `baseCurrency`.
+   * This is essentially `asQuote / exchangeRate`.
    *
    * @param amountAsQuote the amount of `quoteCurrency`
    *

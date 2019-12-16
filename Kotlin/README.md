@@ -33,3 +33,4 @@ Running any gradle command will download all of the necessary tooling, note the 
 - Compilation of the native core library is not automated, for now a static `libCoreMacOS.a` is used.
 - While possible, the current iteration of the JVM implementation and Java/corecrypto are not binary compatible.
 - Android can be added atop the JVM implementation but requires a little bit of build configuration to support dev environments without the Android SDK installed.
+- Kotlin has a default visibility of public, which is undesirable from a library perspective.  In preparation for a library authoring mode, public APIs are marked and the unused warning disregarded.
