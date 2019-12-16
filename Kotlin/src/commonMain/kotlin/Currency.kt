@@ -2,6 +2,7 @@ package com.breadwallet.core
 
 import kotlinx.io.core.Closeable
 
+/** A currency is a medium for exchange. */
 expect class Currency: Closeable {
 
   /** 'A Unique Identifier */

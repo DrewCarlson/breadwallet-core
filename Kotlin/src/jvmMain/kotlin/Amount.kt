@@ -73,7 +73,7 @@ actual class Amount internal constructor(
 
   actual override fun hashCode(): Int = core.hashCode()
 
-  override fun compareTo(other: Amount): Int =
+  actual override operator fun compareTo(other: Amount): Int =
       when (checkNotNull(core.compare(other.core))) {
         BRCryptoComparison.CRYPTO_COMPARE_EQ -> 0
         BRCryptoComparison.CRYPTO_COMPARE_GT -> 1
