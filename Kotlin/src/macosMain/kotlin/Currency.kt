@@ -21,7 +21,7 @@ actual class Currency internal constructor(
   actual val type: String
     get() = checkNotNull(cryptoCurrencyGetType(core)).toKStringFromUtf8()
   actual val issuer: String?
-    get() = checkNotNull(cryptoCurrencyGetIssuer(core)).toKStringFromUtf8()
+    get() = cryptoCurrencyGetIssuer(core)?.toKStringFromUtf8()
 
   actual override fun equals(other: Any?): Boolean {
     return other is Currency && CRYPTO_TRUE == cryptoCurrencyIsIdentical(core, other.core)
