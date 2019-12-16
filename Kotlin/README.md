@@ -1,7 +1,7 @@
 [![Build Status](https://travis-ci.com/DrewCarlson/breadwallet-core.svg?branch=drew%2Fkotlin)](https://travis-ci.com/DrewCarlson/breadwallet-core)
 
 # walletkit-kotlin
-[Kotlin Multiplatform](kotl.in/multiplatform) walletkit implementation
+[Kotlin Multiplatform](https://kotl.in/multiplatform) walletkit implementation
 
 ### Structure
 
