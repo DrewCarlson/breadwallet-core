@@ -26,5 +26,7 @@ Running any gradle command will download all of the necessary tooling, note the 
 
 ### Notes
 
-- The macOS source set can be used for iOS, this is skipped because of the shorter testing loop without iPhone sim.
+- The macOS source set can be used for iOS/watchOS/tvOS. This is skipped because of the shorter testing loop without the simulator and core build setup.
 - Compilation of the native core library is not automated, for now a static `libCoreMacOS.a` is used.
+- While possible, the current iteration of the JVM implementation and Java/corecrypto are not binary compatible.
+- Android can be added atop the JVM implementation but requires a little bit of build configuration to support dev environments without the Android SDK installed.
