@@ -8,13 +8,16 @@
 [src/commonMain/kotlin](src/commonMain/kotlin): Contains common Kotlin that does not use any platform specific APIs.
 Code with the `expect` keyword is replaced by code prefixed with `actual` in a platform specific source directory (`src/<platform>Main/kotlin`).
 This is the multiplatform API definition matching the Swift and Java/corecrypto APIs.
+Mutliplatform Kotlin applications can use this API to target any/all supported platforms.
 
 [src/commonTest/kotlin](src/commonTest/kotlin): Contains common Kotlin test sources.
 These tests are compiled and run for every supported platform.
 
 [src/jvmMain/kotlin](src/jvmMain/kotlin): Contains JVM `actual`s and other specific APIs using the Java/corenative module.
+This code can be used directly in Kotlin/JVM code or Java.
 
-[src/macosMain/kotlin](src/macosMain/kotlin): Contains (obj-c generic) macOS `actual`s and other platform specific APIs using the C API.
+[src/macosMain/kotlin](src/macosMain/kotlin): Contains (obj-c generic) macOS `actual`s and other platform specific APIs using the walletkit C API.
+This code can be used directly in Kotlin/Native code or Obj-C/Swift.
 
 ### Build and Test
 
