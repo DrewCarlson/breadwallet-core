@@ -3,10 +3,8 @@ package com.breadwallet.core
 import kotlinx.cinterop.alloc
 import kotlinx.cinterop.get
 import kotlinx.cinterop.memScoped
-import kotlinx.cinterop.placeTo
 import kotlinx.cinterop.pointed
 import kotlinx.cinterop.ptr
-import kotlinx.cinterop.readValues
 import kotlinx.cinterop.toCValues
 import kotlinx.cinterop.toKStringFromUtf8
 import kotlinx.cinterop.value
