@@ -25,6 +25,7 @@ Running any gradle command will download all of the necessary tooling, note the 
 
 * Run tests: `./gradlew allTest`, `./gradlew macosTest`, `./gradlew jvmTest`
 * Build outputs: `./gradlew assemble`
+* Generate Docs: `./gradlew dokka`
 * Clean build dirs: `./gradlew clean`
 
 ### Notes
