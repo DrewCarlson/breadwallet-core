@@ -192,19 +192,18 @@ class AccountTest {
         bch.addressFor("1BvBMSEYstWetqTFn5Au4m4GFg7xJaNVN2") == nil  // p2pkh not valid for bch
         btc.addressFor(“qp0k6fs6q2hzmpyps3vtwmpx80j9w0r0acmp8l6e9v”) == nil // cashaddr not valid for btc
 */
-  /*
 
-    func testAddressScheme () {
+  @Test
+  fun testAddressScheme() {
+    /* TODO: Platform specific tests
         XCTAssertEqual (AddressScheme.btcLegacy,  AddressScheme(core: AddressScheme.btcLegacy.core))
         XCTAssertEqual (AddressScheme.btcSegwit,  AddressScheme(core: AddressScheme.btcSegwit.core))
         XCTAssertEqual (AddressScheme.ethDefault, AddressScheme(core: AddressScheme.ethDefault.core))
         XCTAssertEqual (AddressScheme.genDefault, AddressScheme(core: AddressScheme.genDefault.core))
-
-        XCTAssertEqual("BTC Legacy",  AddressScheme.btcLegacy.description)
-        XCTAssertEqual("BTC Segwit",  AddressScheme.btcSegwit.description)
-        XCTAssertEqual("ETH Default", AddressScheme.ethDefault.description)
-        XCTAssertEqual("GEN Default", AddressScheme.genDefault.description)
-
-    }
-   */
+    */
+    assertEquals("BTC Legacy", AddressScheme.BTCLegacy.toString())
+    assertEquals("BTC Segwit", AddressScheme.BTCSegwit.toString())
+    assertEquals("ETH Default", AddressScheme.ETHDefault.toString())
+    assertEquals("GEN Default", AddressScheme.GENDefault.toString())
+  }
 }
