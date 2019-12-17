@@ -30,7 +30,7 @@ actual class Network(
       fees: List<NetworkFee>,
       confirmationsUntilFinal: UInt
   ) : this(
-      checkNotNull(when (currency.code) {
+      checkNotNull(when (currency.code.toLowerCase()) {
         CURRENCY_CODE_AS_BTC -> {
           val chainParams = checkNotNull(if (isMainnet) BRMainNetParams else BRTestNetParams)
           cryptoNetworkCreateAsBTC(uids, name, chainParams.pointed.forkId, chainParams)
