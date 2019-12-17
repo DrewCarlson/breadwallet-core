@@ -1,5 +1,6 @@
 package com.breadwallet.core
 
+import brcrypto.*
 import kotlinx.cinterop.alloc
 import kotlinx.cinterop.memScoped
 import kotlinx.cinterop.ptr

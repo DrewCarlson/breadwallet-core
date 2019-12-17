@@ -1,5 +1,7 @@
 package com.breadwallet.core
 
+import brcrypto.*
+
 actual sealed class AddressScheme {
 
   internal val core: BRCryptoAddressScheme

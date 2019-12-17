@@ -1,5 +1,6 @@
 package com.breadwallet.core
 
+import brcrypto.*
 import kotlinx.io.core.Closeable
 
 actual class NetworkFee(

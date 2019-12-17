@@ -35,7 +35,7 @@ kotlin {
             }
             cinterops {
                 BRCrypto {
-                    packageName 'com.breadwallet.core'
+                    packageName 'brcrypto'
                     headers publicApiHeaders + privateApiHeaders
                     includeDirs '..', '../include', '../crypto', '../support'
                 }

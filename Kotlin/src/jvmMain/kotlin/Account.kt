@@ -3,7 +3,6 @@ package com.breadwallet.core
 import com.breadwallet.corenative.cleaner.ReferenceCleaner
 import com.breadwallet.corenative.crypto.BRCryptoAccount
 import com.google.common.primitives.UnsignedLong
-import com.google.common.primitives.UnsignedLongs
 import kotlinx.io.core.Closeable
 
 

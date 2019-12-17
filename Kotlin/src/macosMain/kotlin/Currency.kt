@@ -1,5 +1,6 @@
 package com.breadwallet.core
 
+import brcrypto.*
 import kotlinx.cinterop.toKStringFromUtf8
 import kotlinx.io.core.Closeable
 
