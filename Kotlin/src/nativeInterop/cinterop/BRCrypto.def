@@ -1,1 +1,1 @@
-noStringConversion = cryptoAccountCreate cryptoAccountValidatePaperKey
+noStringConversion = cryptoAccountCreate cryptoAccountValidatePaperKey cryptoKeyEncodePrivate cryptoKeyEncodePublic
