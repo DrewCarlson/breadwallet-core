@@ -30,7 +30,7 @@ actual class Cipher internal constructor(
   }
 
   actual fun decrypt(data: ByteArray): ByteArray? = memScoped {
-    val inputBytes = data.toUByteArray().toCValues()
+    val inputBytes = data.asUByteArray().toCValues()
     val inputLength = inputBytes.size.toULong()
 
     val output = cValue<uByteVar>()
