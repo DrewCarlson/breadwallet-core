@@ -16,9 +16,7 @@ actual class Key internal constructor(
       secret: UInt256
   ) : this(
       checkNotNull(
-          BRCryptoKey.cryptoKeyCreateFromSecret(
-              secret.pointer.getByteArray(0, secret.size())
-          ).orNull()
+          BRCryptoKey.cryptoKeyCreateFromSecret(secret.u8).orNull()
       )
   )
 

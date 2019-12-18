@@ -13,34 +13,34 @@ actual class Cipher internal constructor(
 ) : Closeable {
 
   actual fun encrypt(data: ByteArray): ByteArray? = memScoped {
-    val dataBytes = data.toUByteArray().toCValues()
-    val dataLength = dataBytes.size.toULong()
+    val inputBytes = data.toUByteArray().toCValues()
+    val inputLength = inputBytes.size.toULong()
 
-    val target = cValue<uByteVar>()
-    val targetLength = cryptoCipherEncryptLength(core, dataBytes, dataLength)
-    if (targetLength == 0uL) return null
+    val output = cValue<uByteVar>()
+    val outputLength = cryptoCipherEncryptLength(core, inputBytes, inputLength)
+    if (outputLength == 0uL) return null
 
-    val result = cryptoCipherEncrypt(core, dataBytes, dataLength, target, targetLength)
+    val result = cryptoCipherEncrypt(core, output, outputLength, inputBytes, inputLength)
     if (result == CRYPTO_TRUE) {
-      val ptr = target.ptr
-      ByteArray(targetLength.toInt()) { i ->
+      val ptr = output.ptr
+      ByteArray(outputLength.toInt()) { i ->
         ptr[i].toByte()
       }
     } else null
   }
 
   actual fun decrypt(data: ByteArray): ByteArray? = memScoped {
-    val dataBytes = data.toUByteArray().toCValues()
-    val dataLength = dataBytes.size.toULong()
+    val inputBytes = data.toUByteArray().toCValues()
+    val inputLength = inputBytes.size.toULong()
 
-    val target = cValue<uByteVar>()
-    val targetLength = cryptoCipherDecryptLength(core, dataBytes, dataLength)
-    if (targetLength == 0uL) return null
+    val output = cValue<uByteVar>()
+    val outputLength = cryptoCipherDecryptLength(core, inputBytes, inputLength)
+    if (outputLength == 0uL) return null
 
-    val result = cryptoCipherDecrypt(core, dataBytes, dataLength, target, targetLength)
+    val result = cryptoCipherDecrypt(core, output, outputLength, inputBytes, inputLength)
     if (result == CRYPTO_TRUE) {
-      val ptr = target.ptr
-      ByteArray(targetLength.toInt()) { i ->
+      val ptr = output.ptr
+      ByteArray(outputLength.toInt()) { i ->
         ptr[i].toByte()
       }
     } else null
