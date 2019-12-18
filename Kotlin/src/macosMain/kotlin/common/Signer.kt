@@ -1,0 +1,54 @@
+package com.breadwallet.core
+
+import brcrypto.*
+import kotlinx.cinterop.cValue
+import kotlinx.cinterop.memScoped
+import kotlinx.cinterop.readBytes
+import kotlinx.cinterop.toCValues
+import kotlinx.io.core.Closeable
+import platform.zlib.uByteVar
+
+actual class Signer internal constructor(
+    internal val core: BRCryptoSigner
+) : Closeable {
+  actual fun sign(digest: ByteArray, key: Key): ByteArray? = memScoped {
+    val privKey = key.core
+    val digestBytes = digest.toUByteArray().toCValues()
+    val digestLength = digestBytes.size.toULong()
+    require(digestLength == 32uL)
+
+    val target = cValue<uByteVar>()
+    val targetLength = cryptoSignerSignLength(core, privKey, digestBytes, digestLength)
+    if (targetLength == 0uL) return null
+
+    val result = cryptoSignerSign(core, privKey, target, targetLength, digestBytes, digestLength)
+    if (result == CRYPTO_TRUE) {
+      target.ptr.readBytes(targetLength.toInt())
+    } else null
+  }
+
+  actual fun recover(digest: ByteArray, signature: ByteArray): Key? {
+    val digestBytes = digest.toUByteArray().toCValues()
+    val digestLength = digest.size.toULong()
+    require(digestBytes.size == 32)
+
+    val signatureBytes = signature.toUByteArray().toCValues()
+    val signatureLength = signatureBytes.size.toULong()
+    val coreKey = cryptoSignerRecover(core, digestBytes, digestLength, signatureBytes, signatureLength)
+    return Key(coreKey ?: return null, false)
+  }
+
+  actual override fun close() {
+    cryptoSignerGive(core)
+  }
+
+  actual companion object {
+    actual fun createForAlgorithm(algorithm: SignerAlgorithm): Signer =
+        when (algorithm) {
+          SignerAlgorithm.BASIC_DER -> BRCryptoSignerType.CRYPTO_SIGNER_BASIC_DER
+          SignerAlgorithm.BASIC_JOSE -> BRCryptoSignerType.CRYPTO_SIGNER_BASIC_JOSE
+          SignerAlgorithm.COMPACT -> BRCryptoSignerType.CRYPTO_SIGNER_COMPACT
+        }.run(::cryptoSignerCreate)
+            .let { coreSigner -> Signer(checkNotNull(coreSigner)) }
+  }
+}

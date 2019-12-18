@@ -4,7 +4,7 @@ import com.breadwallet.corenative.cleaner.ReferenceCleaner
 import com.breadwallet.corenative.crypto.BRCryptoKey
 import kotlinx.io.core.Closeable
 
-actual class Key(
+actual class Key internal constructor(
     internal val core: BRCryptoKey
 ) : Closeable {
 

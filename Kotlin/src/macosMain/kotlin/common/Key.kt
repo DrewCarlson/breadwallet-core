@@ -9,7 +9,7 @@ import kotlinx.cinterop.toCStringArray
 import kotlinx.cinterop.toCValues
 import kotlinx.io.core.Closeable
 
-actual class Key(
+actual class Key internal constructor(
     core: BRCryptoKey,
     take: Boolean
 ) : Closeable {
