@@ -1,11 +1,5 @@
 package com.breadwallet.core
 
-// TODO: Type stubs
-typealias WalletManagerState = String
-typealias Wallet = String
-typealias WalletManagerSyncStoppedReason = String
-typealias WalletManagerSyncDepth = String
-
 /**
  * A WalletManager Event represents a asynchronous announcement of a manager's state change.
  */
