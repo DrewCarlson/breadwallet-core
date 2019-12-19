@@ -1,4 +1,4 @@
-package com.breadwallet.core
+package com.breadwallet.core.common
 
 import brcrypto.*
 import kotlinx.cinterop.get

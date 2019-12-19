@@ -1,29 +1,33 @@
-package com.breadwallet.core
+package com.breadwallet.core.common
 
 import brcrypto.*
+import kotlinx.cinterop.addressOf
 import kotlinx.cinterop.cValue
 import kotlinx.cinterop.memScoped
 import kotlinx.cinterop.readBytes
 import kotlinx.cinterop.toCValues
+import kotlinx.cinterop.usePinned
 import kotlinx.io.core.Closeable
 import platform.zlib.uByteVar
 
 actual class Signer internal constructor(
     internal val core: BRCryptoSigner
 ) : Closeable {
-  actual fun sign(digest: ByteArray, key: Key): ByteArray? = memScoped {
+  actual fun sign(digest: ByteArray, key: Key): ByteArray? {
     val privKey = key.core
     val digestBytes = digest.toUByteArray().toCValues()
     val digestLength = digestBytes.size.toULong()
     require(digestLength == 32uL)
 
-    val target = cValue<uByteVar>()
     val targetLength = cryptoSignerSignLength(core, privKey, digestBytes, digestLength)
     if (targetLength == 0uL) return null
+    val target = UByteArray(targetLength.toInt())
 
-    val result = cryptoSignerSign(core, privKey, target, targetLength, digestBytes, digestLength)
-    if (result == CRYPTO_TRUE) {
-      target.ptr.readBytes(targetLength.toInt())
+    val result = target.usePinned {
+      cryptoSignerSign(core, privKey, it.addressOf(0), targetLength, digestBytes, digestLength)
+    }
+    return if (result == CRYPTO_TRUE) {
+      target.asByteArray()
     } else null
   }
 

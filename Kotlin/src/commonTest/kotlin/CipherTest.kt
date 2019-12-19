@@ -1,5 +1,7 @@
 package com.breadwallet.core
 
+import com.breadwallet.core.common.Cipher
+import com.breadwallet.core.common.Key
 import kotlinx.io.core.toByteArray
 import kotlin.test.Test
 import kotlin.test.assertEquals

@@ -3,41 +3,45 @@ package com.breadwallet.core.common
 import brcrypto.*
 import kotlinx.cinterop.ByteVar
 import kotlinx.cinterop.UByteVar
+import kotlinx.cinterop.addressOf
 import kotlinx.cinterop.cValue
 import kotlinx.cinterop.get
 import kotlinx.cinterop.memScoped
 import kotlinx.cinterop.toCValues
+import kotlinx.cinterop.toKString
 import kotlinx.cinterop.toKStringFromUtf8
+import kotlinx.cinterop.usePinned
 import kotlinx.io.core.Closeable
 
 actual class Coder internal constructor(
     internal val core: BRCryptoCoder
 ) : Closeable {
-  actual fun encode(source: ByteArray): String? = memScoped {
+  actual fun encode(source: ByteArray): String? {
     val sourceBytes = source.toUByteArray().toCValues()
     val sourceLength = sourceBytes.size.toULong()
     val targetLength = cryptoCoderEncodeLength(core, sourceBytes, sourceLength)
     if (targetLength == 0uL) return null
 
-    val target = cValue<ByteVar>()
+    val target = ByteArray(targetLength.toInt())
 
-    val result = cryptoCoderEncode(core, target, targetLength, sourceBytes, sourceLength)
-    if (result == CRYPTO_TRUE) {
-      target.ptr.toKStringFromUtf8()
+    val result = target.usePinned {
+      cryptoCoderEncode(core, it.addressOf(0), targetLength, sourceBytes, sourceLength)
+    }
+    return if (result == CRYPTO_TRUE) {
+      target.toKString()
     } else null
   }
 
-  actual fun decode(source: String): ByteArray? = memScoped {
+  actual fun decode(source: String): ByteArray? {
     val targetLength = cryptoCoderDecodeLength(core, source)
     if (targetLength == 0uL)  return null
 
-    val target = cValue<UByteVar>()
-    val result = cryptoCoderDecode(core, target, targetLength, source)
-    if (result == CRYPTO_TRUE) {
-      val ptr = target.ptr
-      ByteArray(targetLength.toInt()) { i ->
-        ptr[i].toByte()
-      }
+    val target = UByteArray(targetLength.toInt())
+    val result = target.usePinned {
+      cryptoCoderDecode(core, it.addressOf(0), targetLength, source)
+    }
+    return if (result == CRYPTO_TRUE) {
+      target.toByteArray()
     } else null
   }
 

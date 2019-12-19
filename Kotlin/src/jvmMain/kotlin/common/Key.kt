@@ -1,5 +1,6 @@
-package com.breadwallet.core
+package com.breadwallet.core.common
 
+import com.breadwallet.core.UInt256
 import com.breadwallet.corenative.cleaner.ReferenceCleaner
 import com.breadwallet.corenative.crypto.BRCryptoKey
 import kotlinx.io.core.Closeable
@@ -51,7 +52,8 @@ actual class Key internal constructor(
         BRCryptoKey.isProtectedPrivateKeyString(privateKey.toByteArray())
 
     actual fun createFromPhrase(phrase: String, words: List<String>?): Key? =
-        BRCryptoKey.createFromPhrase(phrase.toByteArray(), words)
+        if (words == null && wordList == null) null
+        else BRCryptoKey.createFromPhrase(phrase.toByteArray(), words)
             .orNull()
             ?.run(::Key)
 
@@ -74,12 +76,14 @@ actual class Key internal constructor(
         BRCryptoKey.createForPigeon(key.core, nonce).orNull()?.run(::Key)
 
     actual fun createForBIP32ApiAuth(phrase: String, words: List<String>?): Key? =
-        BRCryptoKey.createForBIP32ApiAuth(phrase.toByteArray(), words)
+        if (words == null && wordList == null) null
+        else BRCryptoKey.createForBIP32ApiAuth(phrase.toByteArray(), words)
             .orNull()
             ?.run(::Key)
 
     actual fun createForBIP32BitID(phrase: String, index: Int, uri: String, words: List<String>?): Key? =
-        BRCryptoKey.createForBIP32BitID(phrase.toByteArray(), index, uri, words)
+        if (words == null && wordList == null) null
+        else BRCryptoKey.createForBIP32BitID(phrase.toByteArray(), index, uri, words)
             .orNull()
             ?.run(::Key)
   }

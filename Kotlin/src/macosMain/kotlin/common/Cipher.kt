@@ -1,10 +1,15 @@
-package com.breadwallet.core
+package com.breadwallet.core.common
 
 import brcrypto.*
+import kotlinx.cinterop.addressOf
 import kotlinx.cinterop.cValue
 import kotlinx.cinterop.get
+import kotlinx.cinterop.getBytes
 import kotlinx.cinterop.memScoped
+import kotlinx.cinterop.nativeHeap
+import kotlinx.cinterop.readBytes
 import kotlinx.cinterop.toCValues
+import kotlinx.cinterop.usePinned
 import kotlinx.io.core.Closeable
 import platform.zlib.uByteVar
 
@@ -12,37 +17,35 @@ actual class Cipher internal constructor(
     internal val core: BRCryptoCipher
 ) : Closeable {
 
-  actual fun encrypt(data: ByteArray): ByteArray? = memScoped {
+  actual fun encrypt(data: ByteArray): ByteArray? {
     val inputBytes = data.toUByteArray().toCValues()
     val inputLength = inputBytes.size.toULong()
 
-    val output = cValue<uByteVar>()
     val outputLength = cryptoCipherEncryptLength(core, inputBytes, inputLength)
     if (outputLength == 0uL) return null
+    val output = UByteArray(outputLength.toInt())
 
-    val result = cryptoCipherEncrypt(core, output, outputLength, inputBytes, inputLength)
-    if (result == CRYPTO_TRUE) {
-      val ptr = output.ptr
-      ByteArray(outputLength.toInt()) { i ->
-        ptr[i].toByte()
-      }
+    val result = output.usePinned {
+      cryptoCipherEncrypt(core, it.addressOf(0), outputLength, inputBytes, inputLength)
+    }
+    return if (result == CRYPTO_TRUE) {
+      output.toByteArray()
     } else null
   }
 
-  actual fun decrypt(data: ByteArray): ByteArray? = memScoped {
-    val inputBytes = data.asUByteArray().toCValues()
+  actual fun decrypt(data: ByteArray): ByteArray? {
+    val inputBytes = data.toUByteArray().toCValues()
     val inputLength = inputBytes.size.toULong()
 
-    val output = cValue<uByteVar>()
     val outputLength = cryptoCipherDecryptLength(core, inputBytes, inputLength)
     if (outputLength == 0uL) return null
+    val output = UByteArray(outputLength.toInt())
 
-    val result = cryptoCipherDecrypt(core, output, outputLength, inputBytes, inputLength)
-    if (result == CRYPTO_TRUE) {
-      val ptr = output.ptr
-      ByteArray(outputLength.toInt()) { i ->
-        ptr[i].toByte()
-      }
+    val result = output.usePinned {
+      cryptoCipherDecrypt(core, it.addressOf(0), outputLength, inputBytes, inputLength)
+    }
+    return if (result == CRYPTO_TRUE) {
+      output.toByteArray()
     } else null
   }
 

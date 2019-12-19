@@ -1,5 +1,6 @@
-package com.breadwallet.core
+package com.breadwallet.core.common
 
+import com.breadwallet.core.UInt256
 import kotlinx.io.core.Closeable
 
 expect class Key : Closeable {

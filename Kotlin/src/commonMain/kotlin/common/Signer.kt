@@ -1,5 +1,6 @@
-package com.breadwallet.core
+package com.breadwallet.core.common
 
+import com.breadwallet.core.common.Key
 import kotlinx.io.core.Closeable
 
 expect class Signer : Closeable {

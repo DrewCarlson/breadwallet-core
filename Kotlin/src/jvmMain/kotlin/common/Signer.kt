@@ -1,4 +1,4 @@
-package com.breadwallet.core
+package com.breadwallet.core.common
 
 import com.breadwallet.corenative.cleaner.ReferenceCleaner
 import com.breadwallet.corenative.crypto.BRCryptoSigner
