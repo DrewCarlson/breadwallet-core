@@ -66,7 +66,7 @@ class KeyTest {
     l = Key.createFromPublicKey(t.decodeToString())
     assertNotNull(l)
     assertFalse(l.hasSecret)
-    assertEquals(t.contentHashCode(), l.encodeAsPublic.contentHashCode())
+    assertContentEquals(t, l.encodeAsPublic)
     assertTrue(l.publicKeyMatch(k))
 
     // Bad Key

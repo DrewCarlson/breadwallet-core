@@ -33,7 +33,7 @@ class CipherTest {
         0x17.toByte(), 0xad.toByte(), 0x2b.toByte(), 0x41.toByte(), 0x7b.toByte(),
         0xe6.toByte(), 0x6c.toByte(), 0x37.toByte(), 0x10.toByte())
     val a: ByteArray = assertNotNull(Cipher.createForAesEcb(k).encrypt(d))
-    assertEquals(d.contentHashCode(), Cipher.createForAesEcb(k).decrypt(a)?.contentHashCode())
+    assertContentEquals(d, Cipher.createForAesEcb(k).decrypt(a))
 
     // cha-cha
     val nonce12 = byteArrayOf(
@@ -83,13 +83,13 @@ class CipherTest {
         0xe2.toByte(), 0x6a.toByte(), 0x7e.toByte(), 0x90.toByte(), 0x2e.toByte(),
         0xcb.toByte(), 0xd0.toByte(), 0x60.toByte(), 0x06.toByte(), 0x91.toByte()
     )
-    assertEquals(cipher.contentHashCode(), alg.encrypt(msg)?.contentHashCode())
-    assertEquals(msg.contentHashCode(), alg.decrypt(cipher)?.contentHashCode())
+    assertContentEquals(cipher, alg.encrypt(msg))
+    assertContentEquals(msg, alg.decrypt(cipher))
 
     // pigeon
     val pubKey: Key = assertNotNull(Key.createFromPublicKey("02d404943960a71535a79679f1cf1df80e70597c05b05722839b38ebc8803af517"))
     val pigeon = Cipher.createForPigeon(key, pubKey, nonce12)
     val pigeonCipher: ByteArray = assertNotNull(pigeon.encrypt(msg))
-    assertEquals(msg.contentHashCode(), pigeon.decrypt(pigeonCipher)?.contentHashCode())
+    assertContentEquals(msg, pigeon.decrypt(pigeonCipher))
   }
 }
